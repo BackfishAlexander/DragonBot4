@@ -20,6 +20,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 
 function parseCurrency(input: string): [number, number, number] {
+  console.log(`[INFO] - Parsing currency: '${input}'`);
   // Initialize currency values. We'll use 'gp', 'sp', 'cp' as keys.
   const currencies = { gp: 0, sp: 0, cp: 0 };
 
@@ -40,7 +41,7 @@ function parseCurrency(input: string): [number, number, number] {
 
   // If no valid currency pattern is found, throw an error.
   if (!found) {
-    throw new Error("Input must contain at least one currency value (gp, sp, cp).");
+    throw new Error(`Input must contain at least one currency value (gp, sp, cp). Given input: ${input}`);
   }
 
   // Return an array in the order: [gp, sp, cp].
@@ -84,7 +85,22 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.reply({content: 'Error: Invalid currency notation.', flags: MessageFlags.Ephemeral});
       return;
     }
-    const currency = parseCurrency(inputCurrencyString);
+
+
+    let currency;
+    try {
+      currency = parseCurrency(inputCurrencyString);
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        await interaction.reply({content: error.message, flags: MessageFlags.Ephemeral});
+        return;
+      }
+      else {
+        await interaction.reply({content: "If you are reading this, it means Alex is bad at programming.", flags: MessageFlags.Ephemeral});
+        return;
+      }
+    }
 
 
     adjustBalance(interaction.options.get('target')?.user?.id!, currency[0], currency[1], currency[2]);
@@ -100,7 +116,21 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.reply({content: 'Error: Invalid currency notation.', flags: MessageFlags.Ephemeral});
       return;
     }
-    const currency = parseCurrency(inputCurrencyString);
+
+    let currency;
+    try {
+      currency = parseCurrency(inputCurrencyString);
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        await interaction.reply({content: error.message, flags: MessageFlags.Ephemeral});
+        return;
+      }
+      else {
+        await interaction.reply({content: "If you are reading this, it means Alex is bad at programming.", flags: MessageFlags.Ephemeral});
+        return;
+      }
+    }
 
     adjustBalance(interaction.options.get('target')?.user?.id!, -currency[0], -currency[1], -currency[2]);
 
@@ -115,7 +145,22 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.reply({content: 'Error: Invalid currency notation.', flags: MessageFlags.Ephemeral});
       return;
     }
-    const currency = parseCurrency(inputCurrencyString);
+    
+    
+    let currency;
+    try {
+      currency = parseCurrency(inputCurrencyString);
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        await interaction.reply({content: error.message, flags: MessageFlags.Ephemeral});
+        return;
+      }
+      else {
+        await interaction.reply({content: "If you are reading this, it means Alex is bad at programming.", flags: MessageFlags.Ephemeral});
+        return;
+      }
+    }
 
     const userBalance: any = db.prepare('SELECT * FROM balance WHERE userId = ?').get(interaction.user.id);
 
@@ -139,6 +184,9 @@ client.on(Events.InteractionCreate, async interaction => {
         userBalance.SP >= currency[1] &&
         userBalance.CP >= currency[2]
       ) {
+        userBalance.GP = userBalance.GP - currency[0];
+        userBalance.SP = userBalance.SP - currency[1];
+        userBalance.CP = userBalance.CP - currency[2];
         adjustBalance(interaction.user.id, -currency[0], -currency[1], -currency[2]);
       } else {
         if (userBalance.GP < currency[0]) {
@@ -190,7 +238,21 @@ client.on(Events.InteractionCreate, async interaction => {
       await interaction.reply({content: 'Error: Invalid currency notation.', flags: MessageFlags.Ephemeral});
       return;
     }
-    const currency = parseCurrency(inputCurrencyString);
+
+    let currency;
+    try {
+      currency = parseCurrency(inputCurrencyString);
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        await interaction.reply({content: error.message, flags: MessageFlags.Ephemeral});
+        return;
+      }
+      else {
+        await interaction.reply({content: "If you are reading this, it means Alex is bad at programming.", flags: MessageFlags.Ephemeral});
+        return;
+      }
+    }
 
     const userBalance: any = db.prepare('SELECT * FROM balance WHERE userId = ?').get(interaction.options.get('target')?.user?.id!);
 
